@@ -2,6 +2,7 @@
 #define SRC_CMD_ARGS_H_
 
 #include <queue>
+#include <vector>
 
 #include "arguments/argument.h"
 
@@ -14,7 +15,7 @@ class CMDArgs {
 
   void AddArguments(const std::initializer_list<hhullen::Argument>& args) {
     for (hhullen::Argument arg : args) {
-      positional_.insert({arg.GetName(), arg});
+      arguments_.push_back(arg);
     }
   }
 
@@ -22,7 +23,7 @@ class CMDArgs {
     if (!IsArgExists(name)) {
       throw std::invalid_argument("Argument " + name + " not specified.");
     }
-    return positional_[name].GetValue();
+    return positional_[name];
   }
 
   void Read(int argc, char* argv[]) {
@@ -34,8 +35,10 @@ class CMDArgs {
   }
 
  private:
-  std::map<std::string, hhullen::Argument> positional_;
+  std::map<std::string, std::string> positional_;
   //   std::map<std::string, Argument> optional_;
+  std::vector<hhullen::Argument> arguments_;
+  // std::vector<hhullen::> flags_;
 
   bool IsArgExists(const std::string& name) {
     return positional_.find(name) != positional_.end();
