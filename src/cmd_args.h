@@ -15,7 +15,7 @@ class CMDArgs {
 
   void AddArguments(const std::initializer_list<hhullen::Argument>& args) {
     for (hhullen::Argument arg : args) {
-      arguments_.push_back(arg);
+      arguments_.push(arg);
     }
   }
 
@@ -26,18 +26,27 @@ class CMDArgs {
     return positional_[name];
   }
 
-  void Read(int argc, char* argv[]) {
-    for (int i = 0; i < argc; ++i) {
-      if (IsArgument(std::string(argv[i]))) {
-        !!!
+  void Read(int argc, const char* argv[]) {
+    for (int i = 1; i < argc; ++i) {
+      std::string token = argv[i];
+      if (IsArgument(token) && !arguments_.empty()) {
+        hhullen::Argument argument = arguments_.front();
+        ReadArgumentFromToken(argument, token);
+        arguments_.pop();
+      } else if (IsFlag(token)) {
+      } else {
+        throw std::invalid_argument("Unknown argument " + token +
+                                    " specified.");
       }
     }
+    CheckRemainsArguments();
   }
 
  private:
   std::map<std::string, std::string> positional_;
   //   std::map<std::string, Argument> optional_;
-  std::vector<hhullen::Argument> arguments_;
+
+  std::queue<hhullen::Argument> arguments_;
   // std::vector<hhullen::> flags_;
 
   bool IsArgExists(const std::string& name) {
@@ -46,6 +55,23 @@ class CMDArgs {
 
   bool IsArgument(const std::string& arg) {
     return arg.size() > 0 && arg[0] != '-';
+  }
+
+  bool IsFlag(const std::string& arg) { return false; }
+
+  void ReadArgumentFromToken(hhullen::Argument& argument,
+                             const std::string& token) {
+    argument.ReadArgument(token);
+    std::string name = argument.GetName();
+    std::string value = argument.GetValue();
+    positional_[name] = value;
+  }
+
+  void CheckRemainsArguments() {
+    if (!arguments_.empty()) {
+      std::string name = arguments_.front().GetName();
+      throw std::invalid_argument("Argument " + name + " not specified.");
+    }
   }
 };
 

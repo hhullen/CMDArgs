@@ -11,18 +11,14 @@ class Argument {
  public:
   enum class Type { Int, Float, Str, Path };
 
-  Argument() : name_(""), type_(Type::Str), help_("") {}
+  Argument() : name_(""), type_(Type::Str), help_("") { InitializeRegex(); }
 
   ~Argument() {}
 
   Argument(const std::string &name, Argument::Type type,
            const std::string &help)
-      : name_(name), type_(type_), help_(help) {
-    regex_[Type::Int] = std::regex("^[0-9]+$");
-    regex_[Type::Float] = std::regex("^[0-9]+\\.[0-9]+$");
-    regex_[Type::Str] = std::regex("^[a-zA-Z]+[0-9a-zA-z_-]*[a-zA-Z]*$");
-    regex_[Type::Path] = std::regex(
-        "^[\\w\\/]+[\\.\\\\/\\d\\w\\s\\+\\=\\#\\!\\@\\$\\(\\)\\:_-]*$");
+      : name_(name), type_(type), help_(help) {
+    InitializeRegex();
   }
 
   void ReadArgument(const std::string &arg) {
@@ -42,11 +38,19 @@ class Argument {
   Argument::Type type_;
   std::string value_;
 
-  void ValidateArg(const std::string &arg, const Type type) {
+  void ValidateArg(const std::string &arg, Type type) {
     if (!std::regex_match(arg, regex_[type])) {
       throw std::invalid_argument("Incorrect value type " + arg +
                                   " of option " + name_);
     }
+  }
+
+  void InitializeRegex() {
+    regex_[Type::Int] = std::regex("^[0-9]+$");
+    regex_[Type::Float] = std::regex("^[0-9]+\\.[0-9]+$");
+    regex_[Type::Str] = std::regex("^[a-zA-Z]+[0-9a-zA-z_-]*[a-zA-Z]*$");
+    regex_[Type::Path] = std::regex(
+        "^[\\w\\/]+[\\.\\\\/\\d\\w\\s\\+\\=\\#\\!\\@\\$\\(\\)\\:_-]*$");
   }
 };
 
