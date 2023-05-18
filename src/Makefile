@@ -1,7 +1,3 @@
-t: clean
-	g++ --std=c++17 -g t.cc
-
-
 MAIN_PROJ_NAME=CMDArgs
 TEST_DIR=tests
 ARGUMENTS_DIR=arguments
@@ -78,3 +74,7 @@ gcov_build:
 clean:
 	$(DELETE_FOLDER) $(TO_DELETE_FOLDERS)
 	$(DELETE_FILE) $(TO_DELETE_FILES)
+
+# TEMP
+t: clean
+	g++ --std=c++17 -g t.cc

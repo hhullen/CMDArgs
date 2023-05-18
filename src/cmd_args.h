@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "arguments/argument.h"
+#include "arguments/flag.h"
 
 namespace hhullen {
 
@@ -16,6 +17,12 @@ class CMDArgs {
   void AddArguments(const std::initializer_list<hhullen::Argument>& args) {
     for (hhullen::Argument arg : args) {
       arguments_.push(arg);
+    }
+  }
+
+  void AddFlags(const std::initializer_list<hhullen::Flag>& flags) {
+    for (hhullen::Flag flag : flags) {
+      .push(flag);
     }
   }
 
@@ -47,9 +54,11 @@ class CMDArgs {
   //   std::map<std::string, Argument> optional_;
 
   std::queue<hhullen::Argument> arguments_;
-  // std::vector<hhullen::> flags_;
+  std::map<std::string, hhullen::Flag> flags_;
+  ? ? ? ?
 
-  bool IsArgExists(const std::string& name) {
+        bool
+        IsArgExists(const std::string& name) {
     return positional_.find(name) != positional_.end();
   }
 

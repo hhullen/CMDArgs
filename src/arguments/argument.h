@@ -13,13 +13,13 @@ class Argument {
 
   Argument() : name_(""), type_(Type::Str), help_("") { InitializeRegex(); }
 
-  ~Argument() {}
-
   Argument(const std::string &name, Argument::Type type,
            const std::string &help)
       : name_(name), type_(type), help_(help) {
     InitializeRegex();
   }
+
+  ~Argument() {}
 
   void ReadArgument(const std::string &arg) {
     ValidateArg(arg, type_);
