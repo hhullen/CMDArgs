@@ -12,21 +12,27 @@ namespace hhullen {
 
 class Flag {
  public:
-  Flag() : long_name_(""), short_name_('\0'), regex_("(^-\\w$)|(^--\\w+$)") {}
+  Flag() : long_name_(""), short_name_('\0') {}
 
   Flag(const std::string& long_name, const char short_name,
        const std::string& help,
        const std::initializer_list<hhullen::Argument>& args)
-      : values_(args),
-        long_name_(long_name),
-        short_name_(short_name),
-        regex_("(^-\\w$)|(^--\\w+$)") {}
+      : arguments_(args), long_name_(long_name), short_name_(short_name) {}
+
+  std::string GetLongName() { return long_name_; }
+
+  char GetShortName() { return short_name_; }
+
+  const std::list<hhullen::Argument>& GetArguments() { return arguments_; }
+
+  static bool IsFlag(const std::string& token) {
+    return std::regex_match(token, std::regex("(^-\\w$)|(^--\\w+$)"));
+  }
 
  private:
-  std::list<hhullen::Argument> values_;
+  std::list<hhullen::Argument> arguments_;
   const std::string& long_name_;
   const char short_name_;
-  std::regex regex_;
 };
 
 }  // namespace hhullen

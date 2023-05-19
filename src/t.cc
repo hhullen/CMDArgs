@@ -18,6 +18,7 @@ int main(int argc, const char* argv[]) {
   Flag file_f =
       Flag("file", 'f', "flag-1",
            {Argument("path_to_file", Argument::Type::Path, "optional 1")});
+
   R.AddFlags({file_f});
   return 0;
 }

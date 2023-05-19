@@ -32,6 +32,10 @@ class Argument {
 
   std::string GetHelp() { return help_; }
 
+  static bool IsArgument(const std::string &arg) {
+    return arg.size() > 0 && arg[0] != '-';
+  }
+
  private:
   std::map<Type, std::regex> regex_;
   const std::string &name_, help_;
