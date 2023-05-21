@@ -10,6 +10,17 @@
 namespace hhullen {
 
 class CMDArgs {
+  using Tokens = std::queue<std::string>;
+  using FlagsStruct =
+      std::map<std::pair<std::string, std::string>, hhullen::Flag>;
+  using FlagsStructElement =
+      std::pair<std::pair<std::string, std::string>, hhullen::Flag>;
+  using ArgumentsStruct = std::queue<hhullen::Argument>;
+
+  using ParsedArguments = std::map<std::string, std::string>;
+  using ParsedFlags =
+      std::map<std::pair<std::string, char>, std::list<std::string>>;
+
  public:
   CMDArgs() {}
   ~CMDArgs() {}
@@ -23,30 +34,29 @@ class CMDArgs {
   void AddFlags(const std::initializer_list<hhullen::Flag>& flags) {
     for (hhullen::Flag flag : flags) {
       std::string name_long = "--" + flag.GetLongName();
-      std::string name_short = "-" + flag.GetShortName();
+      std::string name_short = std::string("-") + flag.GetShortName();
       flags_.insert({{name_long, name_short}, flag});
     }
   }
 
   std::string GetArgument(const std::string& name) {
     if (!IsArgExists(name)) {
-      throw std::invalid_argument("Argument " + name + " not specified.");
+      throw std::invalid_argument(name + " was not specified.");
     }
     return positional_[name];
   }
 
   void Read(int argc, const char* argv[]) {
     CopyToThis(argc, argv);
-
-    for (; !tokens_.empty(); tokens_.pop()) {
+    for (; tokens_.size() > 0;) {
       std::string token = tokens_.front();
-      tokens_.pop();
       if (hhullen::Argument::IsArgument(token) && !arguments_.empty()) {
         hhullen::Argument argument = arguments_.front();
         ReadArgumentFromToken(argument, token);
         arguments_.pop();
+        tokens_.pop();
       } else if (hhullen::Flag::IsFlag(token)) {
-        hhullen::Flag flag = GetFlag(token);
+        hhullen::Flag flag = GetFlagFromToken(token);
         ReadFlag(flag);
       } else {
         throw std::invalid_argument("Unknown argument " + token +
@@ -57,13 +67,20 @@ class CMDArgs {
   }
 
  private:
-  std::map<std::string, std::string> positional_;
-  std::map<std::pair<std::string, char>, std::list<std::string>> optional_;
+  ParsedArguments positional_;
+  ParsedFlags optional_;
 
-  std::queue<hhullen::Argument> arguments_;
-  std::map<std::pair<std::string, std::string>, hhullen::Flag> flags_;
+  ArgumentsStruct arguments_;
+  FlagsStruct flags_;
 
-  std::queue<std::string> tokens_;
+  Tokens tokens_;
+  std::string search_token_;
+
+  std::function<bool(const FlagsStructElement&)> search_function =
+      [this](const FlagsStructElement& element) {
+        return element.first.first == search_token_ ||
+               element.first.second == search_token_;
+      };
 
   void CopyToThis(int argc, const char* argv[]) {
     for (int i = 1; i < argc; ++i) {
@@ -75,28 +92,32 @@ class CMDArgs {
     return positional_.find(name) != positional_.end();
   }
 
-  hhullen::Flag GetFlag(const std::string& token) {
-    for (std::pair<std::pair<std::string, std::string>, hhullen::Flag> flag :
-         flags_) {
-      std::pair<std::string, std::string> names = flag.first;
-      if (names.first == token || names.second == token) {
-        return flag.second;
-      }
+  hhullen::Flag GetFlagFromToken(const std::string& token) {
+    search_token_ = token;
+    auto iter = std::find_if(flags_.begin(), flags_.end(), search_function);
+    search_token_.clear();
+
+    if (iter == flags_.end()) {
+      throw std::invalid_argument("Unknown flag " + token + " specified.");
     }
-    throw std::invalid_argument("Unknown flag " + token + " specified.");
+    return (*iter).second;
   }
 
   void ReadFlag(hhullen::Flag& flag) {
     const std::list<hhullen::Argument>& arguments = flag.GetArguments();
     auto iter = arguments.begin();
+    tokens_.pop();
+
     for (; !tokens_.empty() && iter != arguments.end(); tokens_.pop()) {
       hhullen::Argument argument = *iter;
       std::string token = tokens_.front();
-      tokens_.pop();
 
       argument.ReadArgument(token);
+      std::string value = argument.GetValue();
       // CheckNameUniquenessInContainer(name, optional_);
-      optional_[{flag.GetLongName(), flag.GetShortName()}].push_back(token);
+      std::string name_long = flag.GetLongName();
+      char name_short = flag.GetShortName();
+      optional_[{name_long, name_short}].push_back(value);
       ++iter;
     }
   }
@@ -105,20 +126,21 @@ class CMDArgs {
                              const std::string& token) {
     argument.ReadArgument(token);
     std::string value = argument.GetValue();
-    CheckNameUniquenessInContainer(token, positional_);
-    positional_[token] = value;
+    std::string name = argument.GetName();
+    CheckNameUniquenessInContainer(name, positional_);
+    positional_[name] = value;
   }
 
   void CheckRemainsArguments() {
     if (!arguments_.empty()) {
       std::string name = arguments_.front().GetName();
-      throw std::invalid_argument("Argument " + name + " not specified.");
+      throw std::invalid_argument(name + " was not specified.");
     }
   }
 
-  void CheckNameUniquenessInContainer(
-      const std::string& name,
-      const std::map<std::string, std::string>& container) {
+  template <class Container>
+  void CheckNameUniquenessInContainer(const std::string& name,
+                                      const Container& container) {
     if (container.find(name) != container.end()) {
       throw std::invalid_argument("Name " + name + " already read.");
     }
