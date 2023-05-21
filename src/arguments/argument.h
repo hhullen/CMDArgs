@@ -7,58 +7,78 @@
 
 namespace hhullen {
 
+using Str = std::string;
+
 class Argument {
+  using RegEx = std::regex;
+
  public:
   enum class Type { Int, Float, Str, Path };
 
-  Argument() : name_("default-init"), type_(Type::Str), help_("default-init") {
-    InitializeRegex();
-  }
+  Argument();
+  Argument(const Str &name, Argument::Type type, const Str &help);
+  ~Argument();
 
-  Argument(const std::string &name, Argument::Type type,
-           const std::string &help)
-      : name_(name), type_(type), help_(help) {
-    InitializeRegex();
-  }
+  void ReadArgument(const Str &arg);
+  Str GetValue();
+  Str GetName();
+  Str GetHelp();
 
-  ~Argument() {}
-
-  void ReadArgument(const std::string &arg) {
-    ValidateArg(arg, type_);
-    value_ = arg;
-  }
-
-  std::string GetValue() { return value_; }
-
-  std::string GetName() { return name_; }
-
-  std::string GetHelp() { return help_; }
-
-  static bool IsArgument(const std::string &arg) {
+  static bool IsArgument(const Str &arg) {
     return arg.size() > 0 && arg[0] != '-';
   }
 
  private:
-  std::map<Type, std::regex> regex_;
-  const std::string &name_, help_;
+  std::map<Type, RegEx> regex_;
+  const Str &name_, help_;
   Argument::Type type_;
-  std::string value_;
+  Str value_;
 
-  void ValidateArg(const std::string &arg, Type type) {
-    if (!std::regex_match(arg, regex_[type])) {
-      throw std::invalid_argument("Incorrect value type " + arg +
-                                  " of option " + name_);
-    }
-  }
-
-  void InitializeRegex() {
-    regex_[Type::Int] = std::regex("^[0-9]+$");
-    regex_[Type::Float] = std::regex("^[0-9]+\\.[0-9]+$");
-    regex_[Type::Str] = std::regex("^[a-zA-Z]+[0-9a-zA-z_-]*[a-zA-Z]*$");
-    regex_[Type::Path] = std::regex(
-        "^[\\w\\/]+[\\.\\\\/\\d\\w\\s\\+\\=\\#\\!\\@\\$\\(\\)\\:_-]*$");
-  }
+  void ValidateArg(const Str &arg, Type type);
+  void InitializeRegex();
 };
+
+Argument::Argument()
+    : name_("default-init"), type_(Type::Str), help_("default-init") {
+  InitializeRegex();
+}
+
+Argument::Argument(const Str &name, Argument::Type type, const Str &help)
+    : name_(name), type_(type), help_(help) {
+  InitializeRegex();
+}
+
+Argument::~Argument() {}
+
+void Argument::ReadArgument(const Str &arg) {
+  ValidateArg(arg, type_);
+  value_ = arg;
+}
+
+Str Argument::GetValue() { return value_; }
+
+Str Argument::GetName() { return name_; }
+
+Str Argument::GetHelp() { return help_; }
+
+static bool IsArgument(const Str &arg) {
+  return arg.size() > 0 && arg[0] != '-';
+}
+
+void Argument::ValidateArg(const Str &arg, Type type) {
+  if (!std::regex_match(arg, regex_[type])) {
+    throw std::invalid_argument("Incorrect value type " + arg + " of option " +
+                                name_);
+  }
+}
+
+void Argument::InitializeRegex() {
+  regex_[Type::Int] = RegEx("^[0-9]+$");
+  regex_[Type::Float] = RegEx("^[0-9]+\\.[0-9]+$");
+  regex_[Type::Str] = RegEx("^[a-zA-Z]+[0-9a-zA-z_-]*[a-zA-Z]*$");
+  regex_[Type::Path] =
+      RegEx("^[\\w\\/]+[\\.\\\\/\\d\\w\\s\\+\\=\\#\\!\\@\\$\\(\\)\\:_-]*$");
+}
 
 }  // namespace hhullen
 
