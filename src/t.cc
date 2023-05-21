@@ -19,6 +19,8 @@ int main(int argc, const char* argv[]) {
 
   R.AddFlags({file_f});
   R.Read(argc, argv);
-  std::cout << R.GetArgument("mode") << " arg\n";
+  std::list<std::string> values = R.GetFlagValues("--file");
+  std::cout << R.GetArgument("mode") << " | " << R.GetArgument("algorithm")
+            << " | " << values.front() << "\n";
   return 0;
 }

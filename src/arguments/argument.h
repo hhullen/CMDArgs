@@ -11,7 +11,9 @@ class Argument {
  public:
   enum class Type { Int, Float, Str, Path };
 
-  Argument() : name_(""), type_(Type::Str), help_("") { InitializeRegex(); }
+  Argument() : name_("default-init"), type_(Type::Str), help_("default-init") {
+    InitializeRegex();
+  }
 
   Argument(const std::string &name, Argument::Type type,
            const std::string &help)
