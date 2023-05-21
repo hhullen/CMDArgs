@@ -10,30 +10,42 @@
 
 namespace hhullen {
 
+using Str = std::string;
+
 class Flag {
+  using Argument = hhullen::Argument;
+  using RegEx = std::regex;
+
  public:
-  Flag() : long_name_(""), short_name_('\0') {}
+  Flag();
+  Flag(const Str& long_name, const char short_name, const Str& help,
+       const std::initializer_list<Argument>& args);
 
-  Flag(const std::string& long_name, const char short_name,
-       const std::string& help,
-       const std::initializer_list<hhullen::Argument>& args)
-      : arguments_(args), long_name_(long_name), short_name_(short_name) {}
+  Str GetLongName();
+  char GetShortName();
+  const std::list<Argument>& GetArguments();
 
-  std::string GetLongName() { return long_name_; }
-
-  char GetShortName() { return short_name_; }
-
-  const std::list<hhullen::Argument>& GetArguments() { return arguments_; }
-
-  static bool IsFlag(const std::string& token) {
-    return std::regex_match(token, std::regex("(^-\\w$)|(^--\\w+$)"));
+  static bool IsFlag(const Str& token) {
+    return std::regex_match(token, RegEx("(^-\\w$)|(^--\\w+$)"));
   }
 
  private:
-  std::list<hhullen::Argument> arguments_;
-  const std::string& long_name_;
+  std::list<Argument> arguments_;
+  const Str& long_name_;
   const char short_name_;
 };
+
+Flag::Flag() : long_name_(""), short_name_('\0') {}
+
+Flag::Flag(const Str& long_name, const char short_name, const Str& help,
+           const std::initializer_list<Argument>& args)
+    : arguments_(args), long_name_(long_name), short_name_(short_name) {}
+
+Str Flag::GetLongName() { return long_name_; }
+
+char Flag::GetShortName() { return short_name_; }
+
+const std::list<Argument>& Flag::GetArguments() { return arguments_; }
 
 }  // namespace hhullen
 
