@@ -48,7 +48,7 @@ endif
 
 .PHONY: all check tests clean
 
-all: clean tests nav_cli check
+all: clean gcov_report tests check
 
 check:
 	cppcheck $(CPPCH_SETUP) $(CHECK_FILES)
@@ -57,24 +57,20 @@ check:
 	clang-format -n --style=Google $(CHECK_FILES)
 
 tests:
-	$(COMPILER) $(STD) $(TESTBUILD_FILES) $(TEST_FLAGS) \
+	$(COMPILER) $(STD) $(CODE_DIAG_FLAGS) $(TESTBUILD_FILES) $(TEST_FLAGS) \
 	-o $(TEST_EXECUTABLE)
 	.$(SEP)$(TEST_EXECUTABLE)
 
-gcov_report: gcov_build
+gcov_report: clean gcov_build
 	lcov -t "test" -o test.info -c -d .
 	genhtml -o report test.info
 
 gcov_build:
-	$(COMPILER) $(STD) $(TESTBUILD_FILES) \
-	$(ARGUMENTS_BUILD_FILES) $(TEST_FLAGS) \
+	$(COMPILER) $(STD) $(CODE_DIAG_FLAGS) \
+	$(TESTBUILD_FILES) $(TEST_FLAGS) \
 	-o $(TEST_EXECUTABLE) --coverage
 	.$(SEP)$(TEST_EXECUTABLE)
 
 clean:
 	$(DELETE_FOLDER) $(TO_DELETE_FOLDERS)
 	$(DELETE_FILE) $(TO_DELETE_FILES)
-
-# TEMP
-t: clean
-	g++ --std=c++17 -g t.cc

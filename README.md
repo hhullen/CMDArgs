@@ -1,2 +1,2 @@
 # CMDArgs
-CPP class to read CMD arguments.
+This is one-header library to read CMD arguments.

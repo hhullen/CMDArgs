@@ -31,15 +31,19 @@ class Flag {
 
  private:
   std::list<Argument> arguments_;
-  const Str& long_name_;
-  const char short_name_;
+  const Str long_name_ = "default-init";
+  const char short_name_ = '\0';
+  const Str help_ = "no help";
 };
 
-Flag::Flag() : long_name_(""), short_name_('\0') {}
+Flag::Flag() {}
 
 Flag::Flag(const Str& long_name, const char short_name, const Str& help,
            const std::initializer_list<Argument>& args)
-    : arguments_(args), long_name_(long_name), short_name_(short_name) {}
+    : arguments_(args),
+      long_name_(long_name),
+      short_name_(short_name),
+      help_(help) {}
 
 Str Flag::GetLongName() { return long_name_; }
 

@@ -15,6 +15,7 @@ TEST(cmd_args_test, constructor) { EXPECT_NO_THROW(hhullen::CMDArgs R); }
 
 TEST(cmd_args_test, add_arguments_method) {
   hhullen::CMDArgs R;
+  hhullen::Argument default_argument;
   EXPECT_NO_THROW(R.AddArguments(
       {Argument("mode", Argument::Type::Int, "positional 1"),
        Argument("algotithm", Argument::Type::Str, "positional 2")}));
@@ -64,6 +65,17 @@ TEST(cmd_args_test, read_positional_lack_method) {
   EXPECT_THROW(R.Read(argc, argv.data()), invalid_argument);
 }
 
+TEST(cmd_args_test, read_doble_definition_method) {
+  hhullen::CMDArgs R;
+  EXPECT_NO_THROW(R.AddArguments(
+      {Argument("algotithm", Argument::Type::Int, "positional 1"),
+       Argument("algotithm", Argument::Type::Str, "positional 2")}));
+
+  vector<const char*> argv({"utility", "1023", "GFG"});
+  int argc = argv.size();
+  EXPECT_THROW(R.Read(argc, argv.data()), invalid_argument);
+}
+
 TEST(cmd_args_test, get_positional_method) {
   hhullen::CMDArgs R;
   EXPECT_NO_THROW(R.AddArguments(
@@ -85,6 +97,7 @@ TEST(cmd_args_test, add_flag_method) {
       {Argument("mode", Argument::Type::Int, "positional 1"),
        Argument("algotithm", Argument::Type::Str, "positional 2")}));
 
+  hhullen::Flag default_flag;
   hhullen::Flag file_f = hhullen::Flag(
       "file", 'f', "flag-1",
       {Argument("path_to_file", Argument::Type::Path, "optional 1")});
@@ -97,6 +110,48 @@ TEST(cmd_args_test, add_flag_method) {
 
   EXPECT_NO_THROW(R.GetArgument("algotithm"));
   EXPECT_NO_THROW(R.GetArgument("mode"));
+  EXPECT_THROW(R.GetArgument("abobus"), invalid_argument);
+}
+
+TEST(cmd_args_test, add_no_arged_flag_method) {
+  hhullen::CMDArgs R;
+  EXPECT_NO_THROW(R.AddArguments(
+      {Argument("mode", Argument::Type::Int, "positional 1"),
+       Argument("algotithm", Argument::Type::Str, "positional 2")}));
+
+  hhullen::Flag default_flag;
+  hhullen::Flag file_f = hhullen::Flag("bool", 'b', "flag-1", {});
+
+  EXPECT_NO_THROW(R.AddFlags({file_f}));
+
+  vector<const char*> argv({"utility", "1023", "SLE", "-b"});
+  int argc = argv.size();
+  R.Read(argc, argv.data());
+
+  EXPECT_NO_THROW(R.GetArgument("algotithm"));
+  EXPECT_NO_THROW(R.GetArgument("mode"));
+  EXPECT_NO_THROW(R.GetFlagValues("--bool").front() == "true");
+  EXPECT_THROW(R.GetArgument("abobus"), invalid_argument);
+}
+
+TEST(cmd_args_test, read_flag_didnot_set_method) {
+  hhullen::CMDArgs R;
+  EXPECT_NO_THROW(R.AddArguments(
+      {Argument("mode", Argument::Type::Int, "positional 1"),
+       Argument("algotithm", Argument::Type::Str, "positional 2")}));
+
+  hhullen::Flag default_flag;
+  hhullen::Flag file_f = hhullen::Flag("bool", 'b', "flag-1", {});
+
+  EXPECT_NO_THROW(R.AddFlags({file_f}));
+
+  vector<const char*> argv({"utility", "1023", "SLE", "-b"});
+  int argc = argv.size();
+  R.Read(argc, argv.data());
+
+  EXPECT_NO_THROW(R.GetArgument("algotithm"));
+  EXPECT_NO_THROW(R.GetArgument("mode"));
+  EXPECT_THROW(R.GetFlagValues("--avadakedabra"), invalid_argument);
   EXPECT_THROW(R.GetArgument("abobus"), invalid_argument);
 }
 

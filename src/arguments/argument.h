@@ -22,7 +22,6 @@ class Argument {
   void ReadArgument(const Str &arg);
   Str GetValue();
   Str GetName();
-  Str GetHelp();
 
   static bool IsArgument(const Str &arg) {
     return arg.size() > 0 && arg[0] != '-';
@@ -30,21 +29,18 @@ class Argument {
 
  private:
   std::map<Type, RegEx> regex_;
-  const Str &name_, help_;
-  Argument::Type type_;
+  const Str name_ = "default-init", help_ = "default-init";
+  Argument::Type type_ = Type::Str;
   Str value_;
 
   void ValidateArg(const Str &arg, Type type);
   void InitializeRegex();
 };
 
-Argument::Argument()
-    : name_("default-init"), type_(Type::Str), help_("default-init") {
-  InitializeRegex();
-}
+Argument::Argument() { InitializeRegex(); }
 
 Argument::Argument(const Str &name, Argument::Type type, const Str &help)
-    : name_(name), type_(type), help_(help) {
+    : name_(name), help_(help), type_(type) {
   InitializeRegex();
 }
 
@@ -58,12 +54,6 @@ void Argument::ReadArgument(const Str &arg) {
 Str Argument::GetValue() { return value_; }
 
 Str Argument::GetName() { return name_; }
-
-Str Argument::GetHelp() { return help_; }
-
-static bool IsArgument(const Str &arg) {
-  return arg.size() > 0 && arg[0] != '-';
-}
 
 void Argument::ValidateArg(const Str &arg, Type type) {
   if (!std::regex_match(arg, regex_[type])) {
