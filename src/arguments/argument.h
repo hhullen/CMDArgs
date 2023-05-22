@@ -77,7 +77,7 @@ void Argument::InitializeRegex() {
   regex_[Type::Float] = RegEx("^[0-9]+\\.[0-9]+$");
   regex_[Type::Str] = RegEx("^[a-zA-Z]+[0-9a-zA-z_-]*[a-zA-Z]*$");
   regex_[Type::Path] =
-      RegEx("^[\\w\\/]+[\\.\\\\/\\d\\w\\s\\+\\=\\#\\!\\@\\$\\(\\)\\:_-]*$");
+      RegEx("^[\\w\\/\\.]+[\\.\\\\/\\d\\w\\s\\+\\=\\#\\!\\@\\$\\(\\)\\:_-]*$");
 }
 
 }  // namespace hhullen

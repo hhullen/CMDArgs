@@ -167,7 +167,7 @@ void CMDArgs::ReadFlag(Flag& flag) {
   if (iter != arguments.end()) {
     Argument argument = *iter;
     throw std::invalid_argument("Value \"" + argument.GetName() +
-                                "\" of flag [--" + flag.GetLongName() + "-" +
+                                "\" of flag [--" + flag.GetLongName() + " -" +
                                 flag.GetShortName() + "] was not specified.");
   }
 }
@@ -194,7 +194,6 @@ void CMDArgs::CheckFlagUniqueness(const Str& name_long, const Str& name_short) {
   ParsedFlagsIterator iter_name_short =
       std::find_if(optional_.begin(), optional_.end(), parsed_flag_search_func);
   search_token_.clear();
-  std::cout << name_long << " " << name_short << "\n";
   if (iter_name_long != optional_.end() || iter_name_short != optional_.end()) {
     throw std::invalid_argument(
         "CMD structure error: Double flag definition [" + name_long + " " +
