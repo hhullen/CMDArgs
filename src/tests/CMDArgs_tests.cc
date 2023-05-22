@@ -67,3 +67,18 @@ TEST(cmd_args_test, get_positional_method) {
   EXPECT_NO_THROW(R.GetArgument("mode"));
   EXPECT_THROW(R.GetArgument("abobus"), invalid_argument);
 }
+
+TEST(cmd_args_test, get_positional_method) {
+  // hhullen::CMDArgs R;
+  // EXPECT_NO_THROW(R.AddArguments(
+  //     {Argument("mode", Argument::Type::Int, "positional 1"),
+  //      Argument("algotithm", Argument::Type::Str, "positional 2")}));
+
+  // vector<const char*> argv({"utility", "1023", "SLE"});
+  // int argc = argv.size();
+  // R.Read(argc, argv.data());
+
+  // EXPECT_NO_THROW(R.GetArgument("algotithm"));
+  // EXPECT_NO_THROW(R.GetArgument("mode"));
+  // EXPECT_THROW(R.GetArgument("abobus"), invalid_argument);
+}

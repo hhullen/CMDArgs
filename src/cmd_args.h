@@ -56,8 +56,10 @@ class CMDArgs {
   void ReadFlag(Flag& flag);
   void CheckFlagValuesAbsence(Flag& flag);
   void SetParsedValueForFlag(const Str& value, Flag& flag);
+  void CheckFlagUniqueness(const Str& name_long, const Str& name_short);
   void ReadArgumentFromToken(Argument& argument, const Str& token);
   void CheckRemainsArguments();
+  void ThrowNoSpecidiedName(const Str& name);
 };
 
 CMDArgs::CMDArgs() {
@@ -88,7 +90,7 @@ void CMDArgs::AddFlags(const std::initializer_list<Flag>& flags) {
 
 Str CMDArgs::GetArgument(const Str& name) {
   if (!IsArgExists(name)) {
-    throw std::invalid_argument("\"" + name + "\" was not specified.");
+    ThrowNoSpecidiedName(name);
   }
   return positional_[name];
 }
@@ -99,7 +101,7 @@ std::list<Str> CMDArgs::GetFlagValues(const Str& name) {
       std::find_if(optional_.begin(), optional_.end(), parsed_flag_search_func);
   search_token_.clear();
   if (iter == optional_.end()) {
-    throw std::invalid_argument("\"" + name + " was not specified.");
+    ThrowNoSpecidiedName(name);
   }
   return (*iter).second;
 }
@@ -180,8 +182,24 @@ void CMDArgs::CheckFlagValuesAbsence(Flag& flag) {
 void CMDArgs::SetParsedValueForFlag(const Str& value, Flag& flag) {
   Str name_long = Str("--") + flag.GetLongName();
   Str name_short = Str("-") + flag.GetShortName();
-  // CheckNameUniquenessInContainer(name, optional_); !!!!!!!
+  CheckFlagUniqueness(name_long, name_short);
   optional_[{name_long, name_short}].push_back(value);
+}
+
+void CMDArgs::CheckFlagUniqueness(const Str& name_long, const Str& name_short) {
+  search_token_ = name_long;
+  ParsedFlagsIterator iter_name_long =
+      std::find_if(optional_.begin(), optional_.end(), parsed_flag_search_func);
+  search_token_ = name_short;
+  ParsedFlagsIterator iter_name_short =
+      std::find_if(optional_.begin(), optional_.end(), parsed_flag_search_func);
+  search_token_.clear();
+  std::cout << name_long << " " << name_short << "\n";
+  if (iter_name_long != optional_.end() || iter_name_short != optional_.end()) {
+    throw std::invalid_argument(
+        "CMD structure error: Double flag definition [" + name_long + " " +
+        name_short + "].");
+  }
 }
 
 void CMDArgs::ReadArgumentFromToken(Argument& argument, const Str& token) {
@@ -189,7 +207,8 @@ void CMDArgs::ReadArgumentFromToken(Argument& argument, const Str& token) {
   Str value = argument.GetValue();
   Str name = argument.GetName();
   if (positional_.find(name) != positional_.end()) {
-    throw std::invalid_argument("Name \"" + name + "\" already read.");
+    throw std::invalid_argument(
+        "CMD structure error: Double argument definition \"" + name + "\".");
   }
   positional_[name] = value;
 }
@@ -197,8 +216,12 @@ void CMDArgs::ReadArgumentFromToken(Argument& argument, const Str& token) {
 void CMDArgs::CheckRemainsArguments() {
   if (!arguments_.empty()) {
     Str name = arguments_.front().GetName();
-    throw std::invalid_argument("\"" + name + " was not specified.");
+    ThrowNoSpecidiedName(name);
   }
+}
+
+void CMDArgs::ThrowNoSpecidiedName(const Str& name) {
+  throw std::invalid_argument("\"" + name + "\" was not specified.");
 }
 
 }  // namespace hhullen
