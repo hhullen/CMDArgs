@@ -17,14 +17,14 @@ CPPCH_SETUP=--enable=all --suppress=missingInclude \
 BUILD_DIR=..$(SEP)build
 TO_DELETE_FILES=*.o *.out *.dSYM *.gch *.gcda *.gcno .DS_Store $(TEST_EXECUTABLE) \
 				$(CLANG_FILE) *.info
-TO_DELETE_FOLDERS=$(BUILD_DIR) report a.out.dSYM
+TO_DELETE_FOLDERS=$(BUILD_DIR) report a.out.dSYM cmd_args
 
 #Crossplatform specs
 SEP='\'
 MAKEDIR=md
 DELETE_FOLDER=RD /S/Q
 DELETE_FILE=DEL /F
-COPY=copy
+COPY=copy -Recurse
 OPEN=start
 OS=$(shell uname)
 
@@ -34,7 +34,7 @@ ifeq ($(OS), Linux)
 	SEP=/
 	DELETE_FOLDER=rm -rf
 	DELETE_FILE=rm -f
-	COPY=cp
+	COPY=cp -r
 endif
 
 ifeq ($(OS), Darwin)
@@ -43,10 +43,10 @@ ifeq ($(OS), Darwin)
 	SEP=/
 	DELETE_FOLDER=rm -rf
 	DELETE_FILE=rm -f
-	COPY=cp
+	COPY=cp -r
 endif
 
-.PHONY: all check tests clean
+.PHONY: all check tests clean lib
 
 all: clean gcov_report tests check
 
@@ -71,6 +71,10 @@ gcov_build:
 	-o $(TEST_EXECUTABLE) --coverage
 	.$(SEP)$(TEST_EXECUTABLE)
 
+lib:
+	$(MAKEDIR) cmd_args
+	$(COPY) $(ARGUMENTS_DIR) cmd_args$(SEP)
+	$(COPY) cmd_args.h cmd_args$(SEP)
 clean:
 	$(DELETE_FOLDER) $(TO_DELETE_FOLDERS)
 	$(DELETE_FILE) $(TO_DELETE_FILES)
