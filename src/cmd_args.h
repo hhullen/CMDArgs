@@ -8,11 +8,7 @@
 
 namespace hhullen {
 
-using Str = std::string;
-
 class CMDArgs {
-  using Argument = hhullen::Argument;
-  using Flag = hhullen::Flag;
   using StrStrPair = std::pair<Str, Str>;
   using Tokens = std::queue<Str>;
 

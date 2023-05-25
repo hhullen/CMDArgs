@@ -128,7 +128,7 @@ int main(int argc, const char* argv[]) {
 ```
 ./program -b SLE --num 1 0.359 recursive
 ```
-- help methods arguments can be empty string now as it have not been implemented yet
+- "help" methods arguments can be empty string now as it have not been implemented yet
 
 # Make targets
 - `make lib` - create `cmd_args` directory with necessary files

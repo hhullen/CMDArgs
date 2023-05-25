@@ -2,18 +2,12 @@
 #define SRC_ARGUMENT_FLAG_H_
 
 #include <list>
-#include <map>
-#include <regex>
-#include <string>
 
 #include "argument.h"
 
 namespace hhullen {
 
-using Str = std::string;
-
 class Flag {
-  using Argument = hhullen::Argument;
   using RegEx = std::regex;
 
  public:
