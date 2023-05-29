@@ -242,7 +242,7 @@ void CMDArgs::CheckRemainsArguments() {
 }
 
 void CMDArgs::ThrowNoSpecidiedName(const Str& name) {
-  throw std::invalid_argument("\'" + name + "\' was not specified.1");
+  throw std::invalid_argument("\'" + name + "\' was not specified.");
 }
 
 }  // namespace hhullen
