@@ -24,7 +24,7 @@ namespace hhullen {
 
 class Argument {
  public:
-  enum class Type { Int, Float, Str, Path };
+  enum class Type { Int, UInt, Float, Str, Path };
   Argument(const std::string &name, Argument::Type type, const std::string &help);
   ...
 };
