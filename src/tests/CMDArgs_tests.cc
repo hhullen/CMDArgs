@@ -15,7 +15,7 @@ TEST(cmd_args_test, constructor) { EXPECT_NO_THROW(hhullen::CMDArgs R); }
 
 TEST(cmd_args_test, add_arguments_method) {
   hhullen::CMDArgs R;
-  hhullen::Argument default_argument;
+
   EXPECT_NO_THROW(R.AddArguments(
       {Argument("mode", Argument::Type::Int, "positional 1"),
        Argument("algotithm", Argument::Type::Str, "positional 2")}));
@@ -97,7 +97,6 @@ TEST(cmd_args_test, add_flag_method) {
       {Argument("mode", Argument::Type::Int, "positional 1"),
        Argument("algotithm", Argument::Type::Str, "positional 2")}));
 
-  hhullen::Flag default_flag;
   hhullen::Flag file_f = hhullen::Flag(
       "file", 'f', "flag-1",
       {Argument("path_to_file", Argument::Type::Path, "optional 1")});
@@ -119,7 +118,6 @@ TEST(cmd_args_test, add_no_arged_flag_method) {
       {Argument("mode", Argument::Type::Int, "positional 1"),
        Argument("algotithm", Argument::Type::Str, "positional 2")}));
 
-  hhullen::Flag default_flag;
   hhullen::Flag file_f = hhullen::Flag("bool", 'b', "flag-1", {});
 
   EXPECT_NO_THROW(R.AddFlags({file_f}));
@@ -140,7 +138,6 @@ TEST(cmd_args_test, read_flag_didnot_set_method) {
       {Argument("mode", Argument::Type::Int, "positional 1"),
        Argument("algotithm", Argument::Type::Str, "positional 2")}));
 
-  hhullen::Flag default_flag;
   hhullen::Flag file_f = hhullen::Flag("bool", 'b', "flag-1", {});
 
   EXPECT_NO_THROW(R.AddFlags({file_f}));
