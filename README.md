@@ -64,30 +64,22 @@ using hhullen::Flag;
 
 int main(int argc, const char* argv[]) {
   // create some positional arguments:
-  Argument alorithm =
-      Argument("algorithm", Argument::Type::Str, "algorithm name");
-  Argument mode =
-      Argument("mode", Argument::Type::Str, "mode name");
+  Argument alorithm("algorithm", Argument::Type::Str, "algorithm name");
+  Argument mode("mode", Argument::Type::Str, "mode name");
 
   // create argument
-  Argument path =
-      Argument("path_to_file", Argument::Type::Path, "path to file");
+  Argument path("path_to_file", Argument::Type::Path, "path to file");
   // create flag and include created argument as its value
-  Flag file_flag =
-      Flag("file", 'f', "path_to_file", {path});
+  Flag file_flag("file", 'f', "path_to_file", {path});
 
   // create arguments for another flag
-  Argument repeats =
-      Argument("repeats", Argument::Type::Int, "repeats of smt");
-  Argument number =
-      Argument("number", Argument::Type::Float, "number of smt");
+  Argument repeats("repeats", Argument::Type::Int, "repeats of smt");
+  Argument number("number", Argument::Type::Float, "number of smt");
   // create flag and include both as its value
-  Flag num_flag =
-      Flag("num", 'n', "amount of smt", {repeats, number});
+  Flag num_flag("num", 'n', "amount of smt", {repeats, number});
 
   // create flag with no necessary values
-  Flag bool_flag =
-      Flag("bool", 'b', "true/false", {});
+  Flag bool_flag("bool", 'b', "true/false", {});
 
   // create CMDArgs object
   CMDArgs cmd;
