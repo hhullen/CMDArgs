@@ -13,7 +13,7 @@ CLANG_FILE_WAY=..$(SEP)materials$(SEP)linters$(SEP)$(CLANG_FILE)
 CHECK_FILES= $(ARGUMENTS_DIR)$(SEP)*.h \
 			$(ARGUMENTS_BUILD_FILES)
 CPPCH_SETUP=--enable=all --suppress=missingInclude \
-			--suppress=unusedFunction -v --language=c++ $(STD)
+			--suppress=unusedFunction --suppress=noExplicitConstructor -v --language=c++ $(STD)
 BUILD_DIR=..$(SEP)build
 TO_DELETE_FILES=*.o *.out *.dSYM *.gch *.gcda *.gcno .DS_Store $(TEST_EXECUTABLE) \
 				$(CLANG_FILE) *.info
