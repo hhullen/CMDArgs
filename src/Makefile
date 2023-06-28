@@ -6,7 +6,7 @@ TESTBUILD_FILES=$(TEST_DIR)$(SEP)$(MAIN_PROJ_NAME)_tests.cc
 TEST_EXECUTABLE=$(MAIN_PROJ_NAME)_test.out
 COMPILER=g++
 STD=--std=c++17
-CODE_DIAG_FLAGS=-Wall -Wextra -Werror -Wpedantic
+CODE_DIAG_FLAGS=-Wall -Wextra -Werror -Wpedantic -Wshadow -Wconversion -Wnull-dereference -Wsign-conversion
 TEST_FLAGS=-lgtest -pthread -lgtest_main
 CLANG_FILE=.clang-format
 CLANG_FILE_WAY=..$(SEP)materials$(SEP)linters$(SEP)$(CLANG_FILE)
