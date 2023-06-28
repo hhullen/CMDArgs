@@ -24,7 +24,7 @@ namespace hhullen {
 
 class Argument {
  public:
-  enum class Type { Int, UInt, Float, Str, Path };
+  enum class Type { Int, UInt, Float, String, Path };
   Argument(const std::string &name, Argument::Type type, const std::string &help);
   ...
 };
@@ -64,8 +64,8 @@ using hhullen::Flag;
 
 int main(int argc, const char* argv[]) {
   // create some positional arguments:
-  Argument alorithm("algorithm", Argument::Type::Str, "algorithm name");
-  Argument mode("mode", Argument::Type::Str, "mode name");
+  Argument alorithm("algorithm", Argument::Type::String, "algorithm name");
+  Argument mode("mode", Argument::Type::String, "mode name");
 
   // create argument
   Argument path("path_to_file", Argument::Type::Path, "path to file");
