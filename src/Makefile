@@ -62,8 +62,8 @@ tests:
 	.$(SEP)$(TEST_EXECUTABLE)
 
 gcov_report: clean gcov_build
-	lcov -t "test" -o test.info -c -d .
-	genhtml -o report test.info
+	lcov --ignore-errors mismatch -t "test" -o test.info -c -d .
+	genhtml --ignore-errors mismatch -o report test.info
 
 gcov_build:
 	$(COMPILER) $(STD) $(CODE_DIAG_FLAGS) \
